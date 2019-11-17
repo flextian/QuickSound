@@ -9,27 +9,22 @@
 </head>
 
 <body>
-    <input type="file" id="fileElem" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
-    <a href="#" id="fileSelect">Select some files</a> 
-    <div id="fileList">
-      <p>No files selected!</p>
-    </div>
+	<input type="file" id = "audio" accept="audio/mp3 img/*" multiple onchange = "a(this.files)">
+	<div id="fileList">
+		<p>No files selected!</p>
+	</div>
+	<audio controls src="moo.mp3" type="audio/mpeg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.4/Pizzicato.min.js"></script>
 
-    <script>
-    window.URL = window.URL || window.webkitURL;
+
+<script>
+window.URL = window.URL || window.webkitURL;
 
 const fileSelect = document.getElementById("fileSelect"),
     fileElem = document.getElementById("fileElem"),
     fileList = document.getElementById("fileList");
 
-fileSelect.addEventListener("click", function (e) {
-  if (fileElem) {
-    fileElem.click();
-  }
-  e.preventDefault(); // prevent navigation to "#"
-}, false);
-
-function handleFiles(files) {
+function a(files) {
   if (!files.length) {
     fileList.innerHTML = "<p>No files selected!</p>";
   } else {
@@ -39,10 +34,25 @@ function handleFiles(files) {
     for (let i = 0; i < files.length; i++) {
       const li = document.createElement("li");
       list.appendChild(li);
-      
-      const img = document.createElement("img");
-      img.src = window.URL.createObjectURL(files[i]);
-      img.height = 60;
+    
+
+
+
+
+    
+    const img = document.createElement("audio");
+    img.src = window.URL.createObjectURL(files[i]);
+    
+    var acousticGuitar = new Pizzicato.Sound(img.src, function() {
+
+      var distortion = new Pizzicato.Effects.Distortion({gain: 100});
+    acousticGuitar.addEffect(distortion);
+    acousticGuitar.play();
+});
+
+	  img.type = "audio/mpeg";
+	  img.controls = true;
+	  
       img.onload = function() {
         window.URL.revokeObjectURL(this.src);
       }
@@ -53,6 +63,10 @@ function handleFiles(files) {
     }
   }
 }
-    </script>
+</script>
+
 </body>
+
+
+
 </html>
