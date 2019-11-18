@@ -5,26 +5,27 @@
 	<meta charset="UTF-8" />
 	
 	<style type="text/css">
-	</style>
+  </style>
+<script src="Pizzicato.js"></script>
 </head>
 
 <body>
-	<input type="file" id = "audio" accept="audio/mp3 img/*" multiple onchange = "a(this.files)">
+	<input type="file" id = "audio" accept="audio/mp3 img/*" multiple onchange = "aa(this.files)">
 	<div id="fileList">
 		<p>No files selected!</p>
 	</div>
-	<audio controls src="moo.mp3" type="audio/mpeg">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.4/Pizzicato.min.js"></script>
+    
 
 
 <script>
-window.URL = window.URL || window.webkitURL;
+  
+  window.URL = window.URL || window.webkitURL;
 
 const fileSelect = document.getElementById("fileSelect"),
     fileElem = document.getElementById("fileElem"),
     fileList = document.getElementById("fileList");
 
-function a(files) {
+function aa(files) {
   if (!files.length) {
     fileList.innerHTML = "<p>No files selected!</p>";
   } else {
@@ -45,7 +46,7 @@ function a(files) {
     
     var acousticGuitar = new Pizzicato.Sound(img.src, function() {
 
-      var distortion = new Pizzicato.Effects.Distortion({gain: 100});
+      var distortion = new Pizzicato.Effects.Distortion({gain: 5});
     acousticGuitar.addEffect(distortion);
     acousticGuitar.play();
 });
