@@ -1,73 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Loud</title>
+	<title>My Website</title>
 	<meta charset="UTF-8" />
 	
-	<style type="text/css">
-  </style>
-<script src="Pizzicato.js"></script>
+    <style>
+        .center-align {
+            display: block;
+            margin: 0px auto;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            grid-gap: 10px;
+            background-color: #2196F3;
+            padding: 10px;
+        }
+
+
+
+	</style>
 </head>
 
 <body>
-	<input type="file" id = "audio" accept="audio/mp3 img/*" multiple onchange = "aa(this.files)">
-	<div id="fileList">
-		<p>No files selected!</p>
-	</div>
-    
+    <h1 class="center-align">Flextian's Litty Audio Editor</h1>
+    <input class="center-align" type="file" id="audio-input-button" accept="audio/*">
 
+    <div class="grid-container">
+            <div class="grid-item">1</div>
+            <div class="grid-item">2</div>
+            <div class="grid-item">3</div>
+          </div> 
+
+    <button class="center-align" onclick="createbar()">Compile Audio</button>
+	<div id="output">
+        <p></p>
+    </div>
 
 <script>
-  
-  window.URL = window.URL || window.webkitURL;
-
-const fileSelect = document.getElementById("fileSelect"),
-    fileElem = document.getElementById("fileElem"),
-    fileList = document.getElementById("fileList");
-
-function aa(files) {
-  if (!files.length) {
-    fileList.innerHTML = "<p>No files selected!</p>";
-  } else {
-    fileList.innerHTML = "";
-    const list = document.createElement("ul");
-    fileList.appendChild(list);
-    for (let i = 0; i < files.length; i++) {
-      const li = document.createElement("li");
-      list.appendChild(li);
-    
+/*
+<input type="checkbox" id="gain-checkbox">
+<h3 style="display:inline;">Gain</h3>
+<input type="text"></input>
+</span>
+<span class="filter">
+<input type="checkbox" id="speed-multiplier-checkbox">
+<h3 style="display:inline;">Speed Multiplier</h3>
+<input type="text"></input>
 
 
+createFilter("asdf");
 
-
-    
-    const img = document.createElement("audio");
-    img.src = window.URL.createObjectURL(files[i]);
-    
-    var acousticGuitar = new Pizzicato.Sound(img.src, function() {
-
-      var distortion = new Pizzicato.Effects.Distortion({gain: 5});
-    acousticGuitar.addEffect(distortion);
-    acousticGuitar.play();
-});
-
-	  img.type = "audio/mpeg";
-	  img.controls = true;
-	  
-      img.onload = function() {
-        window.URL.revokeObjectURL(this.src);
-      }
-      li.appendChild(img);
-      const info = document.createElement("span");
-      info.innerHTML = files[i].name + ": " + files[i].size + " bytes";
-      li.appendChild(info);
+    function createFilter(filterName){
+        var filterDiv = document.createElement("div");
+        var checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = filterName + "-checkbox";
+        var title = document.createElement("h1");
+        var filterName = document.createTextNode(filterName);
+        title.appendChild(filterName);
+        title.style = "display: inline;";
+        filterDiv.appendChild(checkbox);
+        filterDiv.appendChild(title);
+        document.body.appendChild(filterDiv);
     }
-  }
-}
+
+*/
+    function createbar(){
+        //creates the audio bar
+        var fileInput = document.getElementById("audio-input-button");
+        var file = fileInput.files;
+        const audioBar = document.createElement("audio");
+        audioBar.src = window.URL.createObjectURL(file[0]);
+        audioBar.type = "audio/mpeg";
+        audioBar.controls = true;
+        audioBar.className = "center-align";
+
+        //creates the filter
+        var context = new AudioContext(),
+        audioSource = context.createMediaElementSource(audioBar),
+        gainNode = context.createGain();
+        audioSource.connect(gainNode);
+        gainNode.gain.value = 1000;
+        gainNode.connect(context.destination);
+
+        //appends audio bar to the div
+        const outputArea = document.getElementById("output");
+        outputArea.innerHTML = "";
+        outputArea.append(audioBar);
+    }
 </script>
-
 </body>
-
-
 
 </html>
