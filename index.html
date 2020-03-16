@@ -2,43 +2,20 @@
 <html>
 <head>
 	<title>My Website</title>
-	<meta charset="UTF-8" />
-	
-    <style>
-        .center-align {
-            display: block;
-            margin: 0px auto;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: auto auto auto;
-            grid-gap: 10px;
-            background-color: #2196F3;
-            padding: 10px;
-        }
-
-
-
-	</style>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
 <body>
-    <h1 class="center-align">Flextian's Litty Audio Editor</h1>
-    <input class="center-align" type="file" id="audio-input-button" accept="audio/*">
+    <h1>Flextian's Litty Audio Editor</h1>
+    <input type="file" id="audio-input-button" accept="audio/*">
 
-    <div class="grid-container">
-            <div class="grid-item">1</div>
-            <div class="grid-item">2</div>
-            <div class="grid-item">3</div>
-          </div> 
-
-    <button class="center-align" onclick="createbar()">Compile Audio</button>
-	<div id="output">
-        <p></p>
+    <div>
+        
     </div>
+
+    <button onclick="compile()">Compile Audio</button>
+	<div id="output"></div>
 
 <script>
 /*
@@ -69,7 +46,7 @@ createFilter("asdf");
     }
 
 */
-    function createbar(){
+    function compile(){
         //creates the audio bar
         var fileInput = document.getElementById("audio-input-button");
         var file = fileInput.files;
