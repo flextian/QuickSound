@@ -1,3 +1,13 @@
 body{
     text-align: center;
 }
+
+.wrapper{
+    display: grid;
+    width: 60%;
+    margin: 0 auto;
+    grid-template-columns: repeat(3, 1fr);
+}
+.item{
+    background-color: blue;
+}

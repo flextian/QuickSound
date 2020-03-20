@@ -10,14 +10,13 @@
     <h1>Flextian's Litty Audio Editor</h1>
     <input type="file" id="audio-input-button" accept="audio/*">
 
-    <div>
-        
+    <div class="wrapper">
     </div>
 
     <button onclick="compile()">Compile Audio</button>
 	<div id="output"></div>
 
-<script>
+<script src="index.js">
 /*
 <input type="checkbox" id="gain-checkbox">
 <h3 style="display:inline;">Gain</h3>
@@ -46,29 +45,6 @@ createFilter("asdf");
     }
 
 */
-    function compile(){
-        //creates the audio bar
-        var fileInput = document.getElementById("audio-input-button");
-        var file = fileInput.files;
-        const audioBar = document.createElement("audio");
-        audioBar.src = window.URL.createObjectURL(file[0]);
-        audioBar.type = "audio/mpeg";
-        audioBar.controls = true;
-        audioBar.className = "center-align";
-
-        //creates the filter
-        var context = new AudioContext(),
-        audioSource = context.createMediaElementSource(audioBar),
-        gainNode = context.createGain();
-        audioSource.connect(gainNode);
-        gainNode.gain.value = 1000;
-        gainNode.connect(context.destination);
-
-        //appends audio bar to the div
-        const outputArea = document.getElementById("output");
-        outputArea.innerHTML = "";
-        outputArea.append(audioBar);
-    }
 </script>
 </body>
 
