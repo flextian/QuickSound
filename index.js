@@ -80,7 +80,6 @@ function compile(){
 
     var context = new AudioContext();
     var audioSource = context.createMediaElementSource(audioBar);
-    context.createBufferSource
     if (allCheckedFilters.length === 0){
         audioSource.connect(context.destination);
     }
