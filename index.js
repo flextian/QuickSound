@@ -78,7 +78,7 @@ function compile(){
         }
     }
 
-    var context = new AudioContext();
+    var context = new OfflineAudioContext();
     var audioSource = context.createMediaElementSource(audioBar);
     if (allCheckedFilters.length === 0){
         audioSource.connect(context.destination);
@@ -90,6 +90,8 @@ function compile(){
     //appends audio bar to the div
     const outputArea = document.getElementById("output");
     outputArea.innerHTML = "";
+    audioBar.src = dest.stream;
+    console.log(dest.stream);
 
     outputArea.append(audioBar);
 }
