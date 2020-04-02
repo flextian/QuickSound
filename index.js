@@ -1,64 +1,70 @@
 class Filter{
 
-    static allFilters = [];
-
     constructor(name){
-        Filter.allFilters.push(name);
         this.name = name;
-        this.allParams = [];
-        // This div will contain all the parameters
-        // ID Example: Gain-param
-        this.paramDiv = document.createElement("div");
-        this.paramDiv.id = this.name + "-param";
+        this.allParams = {};
 
         // This is the overall div that the filter is in
         var filterDiv = document.createElement("div");
         filterDiv.className = "item";
 
-        // Checkbox and label for filter
+        // This div will contain all the parameters
+        // ID Example: Gain-param
+        this.paramDiv = document.createElement("div");
+        this.paramDiv.id = this.name + "-param";
+
+        // Checkbox to enable the filter
         // ID Example: Gain-checkbox
-        var checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = this.name + "-checkbox";
+        this.checkbox = document.createElement("input");
+        this.checkbox.type = "checkbox";
+        this.checkbox.id = this.name + "-checkbox";
+        // Name of the filter
         var label = document.createElement("label");
-        label.htmlFor = checkbox.id;
+        label.htmlFor = this.checkbox.id;
         label.textContent = this.name;
 
-        filterDiv.appendChild(checkbox);
+        filterDiv.appendChild(this.checkbox);
         filterDiv.appendChild(label);
         filterDiv.appendChild(this.paramDiv);
 
         document.getElementsByClassName("wrapper")[0].appendChild(filterDiv);
     }
+
+    getChecked(){
+        return this.checkbox.checked;
+    }
+
     createNumberParam(paramName, defaultNum) {
+        var param = new NumberParam(paramName, defaultNum, this.name);
+        this.allParams[paramName] = param
+        console.log(this.allParams);
+    }
+}
+
+class NumberParam {
+    constructor(paramName, defaultNum, filterName){
         var paramLabel = document.createElement("label");
         paramLabel.htmlFor = this.name + "-" + paramName;
         paramLabel.textContent = paramName;
         
         // ID Example: Gain-Value
-        var inputBox = document.createElement("input");
-        inputBox.type = "number";
-        inputBox.value = defaultNum;
-        inputBox.id = this.name + "-" + paramName;
+        this.inputBox = document.createElement("input");
+        this.inputBox.type = "number";
+        this.inputBox.value = defaultNum;
+        this.inputBox.id = this.name + "-" + paramName;
 
-        document.getElementById(this.name + "-param").appendChild(paramLabel);
-        document.getElementById(this.name + "-param").appendChild(inputBox);
-
-        this.allParams.push(paramName);
+        document.getElementById(filterName + "-param").appendChild(paramLabel);
+        document.getElementById(filterName + "-param").appendChild(this.inputBox);
     }
-    static run(EnabledFilters, context, audioSource){
-        for (var filter in EnabledFilters){
-            var gainNode = context.createGain();
-            audioSource.connect(gainNode);
-            gainNode.gain.value = 1000;
-            gainNode.connect(context.destination);
 
-        }
+    getValue(){
+        return this.inputBox.value;
     }
 }
 
 var gain = new Filter("Gain");
-gain.createNumberParam("Value", 0);
+gain.createNumberParam("Gain Value", 1);
+var allFilters = [gain]
 
 function compile(){
     //creates the audio bar
@@ -73,24 +79,28 @@ function compile(){
                 length: 44100 * buffer.duration,
                 sampleRate: 44100,
             });
-            soundSource = offlineAudioCtx.createBufferSource();
+            var soundSource = offlineAudioCtx.createBufferSource();
             soundSource.buffer = buffer;
 
             var allCheckedFilters = [];
-            for (var filter in Filter.allFilters){
-                if (document.getElementById(Filter.allFilters[filter] + "-checkbox").checked){
-                    allCheckedFilters.push(Filter.allFilters[filter]);
+            for (var filter in allFilters){
+                if (allFilters[filter].getChecked()){
+                    allCheckedFilters.push(allFilters[filter]);
                 }
             }
+            
+            console.log(allCheckedFilters.length);
 
             if (allCheckedFilters.length === 0){
                 soundSource.connect(offlineAudioCtx.destination);
             }
             else{
-                Filter.run(allCheckedFilters, offlineAudioCtx, soundSource);
+                for (var filter in allCheckedFilters){
+                    enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
+                }
             }
 
-            soundSource.start(0);  // Added by Russell HOLY SHIT DUDE, THIS ONE FUCKING LINE TOOK ME 6 + HOURS TO FIND OUTO IUWHH THIS FYCING PROGRAMW AWASING WORKING BITCHSOE IJOFAJWIEJOI JAWEOIFJAPOWEJFOAWIEJ OAWIJEFOAEWJFI
+            soundSource.start(0);  // Added by Russell - Shoutout Russell 
             
             offlineAudioCtx.startRendering().then(function(renderedBuffer) {
                 console.log("onload called");
@@ -100,6 +110,17 @@ function compile(){
     }
 
     fileReader.readAsArrayBuffer(file);
+
+    function enable(filter, soundSource, offlineAudioCtx){
+        switch(filter.name){
+            case "Gain":
+                var gainNode = offlineAudioCtx.createGain();
+                gainNode.gain.value = filter.allParams["Gain Value"].getValue();
+                soundSource.connect(gainNode);
+                gainNode.connect(offlineAudioCtx.destination);
+                break;
+        }
+    }
 
     function make_download(abuffer, total_samples) {
         var newFile = URL.createObjectURL(bufferToWave(abuffer, total_samples));
@@ -152,7 +173,7 @@ function compile(){
         channels.push(abuffer.getChannelData(i));
     
         while(pos < length) {
-            for(i = 0; i < numOfChan; i++) {                                        // interleave channels
+            for(i = 0; i < numOfChan; i++){                                        // interleave channels
                 sample = Math.max(-1, Math.min(1, channels[i][offset]));            // clamp
                 sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;    // scale to 16-bit signed int
                 view.setInt16(pos, sample, true);                                   // write 16-bit sample
