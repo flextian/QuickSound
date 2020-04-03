@@ -64,7 +64,9 @@ class NumberParam {
 
 var gain = new Filter("Gain");
 gain.createNumberParam("Gain Value", 1);
-var allFilters = [gain]
+var speed = new Filter("Speed");
+speed.createNumberParam("Multiplier", 1);
+var allFilters = [gain, speed]
 
 function compile(){
     //creates the audio bar
@@ -76,7 +78,8 @@ function compile(){
         audioCtx.decodeAudioData(ev.target.result).then(function(buffer){
             var offlineAudioCtx = new OfflineAudioContext({
                 numberOfChannels: 2,
-                length: 44100 * buffer.duration,
+                // If the speed filter is checked divide the original length by the multiplier, otherwise keep it the same length
+                length: speed.getChecked() ? (44100 * buffer.duration) / speed.allParams["Multiplier"].getValue() : 44100 * buffer.duration,
                 sampleRate: 44100,
             });
             var soundSource = offlineAudioCtx.createBufferSource();
@@ -91,13 +94,10 @@ function compile(){
             
             console.log(allCheckedFilters.length);
 
-            if (allCheckedFilters.length === 0){
-                soundSource.connect(offlineAudioCtx.destination);
-            }
-            else{
-                for (var filter in allCheckedFilters){
-                    enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
-                }
+
+            soundSource.connect(offlineAudioCtx.destination);
+            for (var filter in allCheckedFilters){
+                enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
             }
 
             soundSource.start(0);  // Added by Russell - Shoutout Russell 
@@ -118,6 +118,9 @@ function compile(){
                 gainNode.gain.value = filter.allParams["Gain Value"].getValue();
                 soundSource.connect(gainNode);
                 gainNode.connect(offlineAudioCtx.destination);
+                break;
+            case "Speed":
+                soundSource.playbackRate.value = filter.allParams["Multiplier"].getValue();
                 break;
         }
     }
