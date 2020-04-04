@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/addons/p5.sound.min.js"></script>
 	<title>My Website</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" type="text/css" href="index.css">
@@ -11,16 +9,20 @@
 <body>
     <h1>Flextian's Online Audio Editor</h1>
     <input type="file" id="audio-input-button" accept="audio/*">
+    <div id="file-audio"></div>
+
     <p>or</p>
-    <button onclick="record()">Record Audio</button>
+
+    <button id="record-start">Record Audio</button>
+    <div id="recorded-audio"></div>
 
     <div class="wrapper"></div>
 
     <button onclick="compile()">Compile Audio</button>
 	<div id="output"></div>
 
-<script src="index.js">
-</script>
+<script src="index.js"></script>
+<script src="events.js"></script>
 </body>
 
 </html>

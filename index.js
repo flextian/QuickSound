@@ -71,7 +71,16 @@ var allFilters = [gain, speed]
 function compile(){
     //creates the audio bar
     var fileInput = document.getElementById("audio-input-button");
-    var file = fileInput.files[0];
+    switch (fileOrRecording){
+        // If using file from file input
+        case 0:
+            var file = fileInput.files[0];
+            break;
+        // If using file from recording
+        case 1:
+            var file = recordingFile;
+            break;
+    }
     var audioCtx = new AudioContext();
     var fileReader = new FileReader();
     fileReader.onload = function(ev){
@@ -204,10 +213,4 @@ function compile(){
             pos += 4;
         }
     }
-}
-
-var mic;
-function setup(){
-    mic = new p5.AudioIn();
-    mic.start();
 }
