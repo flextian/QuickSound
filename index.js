@@ -76,9 +76,10 @@ function compile(){
     var fileReader = new FileReader();
     fileReader.onload = function(ev){
         audioCtx.decodeAudioData(ev.target.result).then(function(buffer){
+            console.log((44100 * buffer.duration) / speed.allParams["Multiplier"].getValue());
+            console.log(44100 * buffer.duration);
             var offlineAudioCtx = new OfflineAudioContext({
                 numberOfChannels: 2,
-                // If the speed filter is checked divide the original length by the multiplier, otherwise keep it the same length
                 length: speed.getChecked() ? (44100 * buffer.duration) / speed.allParams["Multiplier"].getValue() : 44100 * buffer.duration,
                 sampleRate: 44100,
             });
@@ -122,6 +123,9 @@ function compile(){
             case "Speed":
                 soundSource.playbackRate.value = filter.allParams["Multiplier"].getValue();
                 break;
+            case "Pitch":
+                soundSource.detune.value = filter.allParams["Pitch"].getValue();
+                break;
         }
     }
 
@@ -153,7 +157,9 @@ function compile(){
             channels = [], i, sample,
             offset = 0,
             pos = 0;
-    
+        
+        console.log("The sample rate is: " + abuffer.sampleRate);
+        
         // write WAVE header
         setUint32(0x46464952);                         // "RIFF"
         setUint32(length - 8);                         // file length - 8
@@ -200,3 +206,8 @@ function compile(){
     }
 }
 
+var mic;
+function setup(){
+    mic = new p5.AudioIn();
+    mic.start();
+}
