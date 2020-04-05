@@ -66,7 +66,8 @@ var gain = new Filter("Gain");
 gain.createNumberParam("Gain Value", 1);
 var speed = new Filter("Speed");
 speed.createNumberParam("Multiplier", 1);
-var allFilters = [gain, speed]
+var reverb = new Filter("Reverb");
+var allFilters = [gain, speed, reverb]
 
 function compile(){
     //creates the audio bar
@@ -85,12 +86,10 @@ function compile(){
     var fileReader = new FileReader();
     fileReader.onload = function(ev){
         audioCtx.decodeAudioData(ev.target.result).then(function(buffer){
-            console.log((44100 * buffer.duration) / speed.allParams["Multiplier"].getValue());
-            console.log(44100 * buffer.duration);
             var offlineAudioCtx = new OfflineAudioContext({
                 numberOfChannels: 2,
-                length: speed.getChecked() ? (44100 * buffer.duration) / speed.allParams["Multiplier"].getValue() : 44100 * buffer.duration,
-                sampleRate: 44100,
+                length: speed.getChecked() ? (48000 * buffer.duration) / speed.allParams["Multiplier"].getValue() : 48000 * buffer.duration,
+                sampleRate: 48000,
             });
             var soundSource = offlineAudioCtx.createBufferSource();
             soundSource.buffer = buffer;
@@ -102,9 +101,6 @@ function compile(){
                 }
             }
             
-            console.log(allCheckedFilters.length);
-
-
             soundSource.connect(offlineAudioCtx.destination);
             for (var filter in allCheckedFilters){
                 enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
@@ -113,7 +109,7 @@ function compile(){
             soundSource.start(0);  // Added by Russell - Shoutout Russell 
             
             offlineAudioCtx.startRendering().then(function(renderedBuffer) {
-                console.log("onload called");
+                console.log("onload called!");
                 make_download(renderedBuffer, offlineAudioCtx.length);
             });
         });
@@ -132,8 +128,33 @@ function compile(){
             case "Speed":
                 soundSource.playbackRate.value = filter.allParams["Multiplier"].getValue();
                 break;
-            case "Pitch":
-                soundSource.detune.value = filter.allParams["Pitch"].getValue();
+            case "Reverb":
+                var request = new XMLHttpRequest();
+                request.open("GET", "impulse2.wav", true);
+                request.responseType = 'arraybuffer'
+                request.onload = function (ev) {
+
+                    if (request.readyState === 4) {
+                        if (request.status === 200) {
+                            console.log("yay!!!");
+                        } else {
+                            console.error(request.statusText);
+                        }
+                    }
+
+                    offlineAudioCtx.decodeAudioData(request.response).then(function(buffer){
+                        var convolver = offlineAudioCtx.createConvolver();
+                        convolver.buffer = buffer;
+    
+                        soundSource.connect(convolver);
+                        convolver.connect(offlineAudioCtx.destination);
+                        console.log("finished reverb");
+                    });
+                }
+                request.onerror = function (ev) {
+                    console.error(request.statusText);
+                };
+                request.send(null);
                 break;
         }
     }
@@ -166,9 +187,7 @@ function compile(){
             channels = [], i, sample,
             offset = 0,
             pos = 0;
-        
-        console.log("The sample rate is: " + abuffer.sampleRate);
-        
+                
         // write WAVE header
         setUint32(0x46464952);                         // "RIFF"
         setUint32(length - 8);                         // file length - 8

@@ -54,6 +54,8 @@ fileInputButton.addEventListener("change", function(ev){
     fileAudioBar.controls = true;
     fileAudioBar.src = URL.createObjectURL(fileInputButton.files[0]);
     div.appendChild(fileAudioBar);
-    fileOrRecording = 0;
 });
 
+fileInputButton.addEventListener("click", function(ev){
+    fileOrRecording = 0;
+});
