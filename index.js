@@ -37,7 +37,6 @@ class Filter{
     createNumberParam(paramName, defaultNum) {
         var param = new NumberParam(paramName, defaultNum, this.name);
         this.allParams[paramName] = param
-        console.log(this.allParams);
     }
 }
 
@@ -101,62 +100,61 @@ function compile(){
                 }
             }
             
+            var filterPromiseList = [];
             soundSource.connect(offlineAudioCtx.destination);
             for (var filter in allCheckedFilters){
-                enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
+                var promise = enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
+                filterPromiseList.push(promise);
             }
 
-            soundSource.start(0);  // Added by Russell - Shoutout Russell 
-            
-            offlineAudioCtx.startRendering().then(function(renderedBuffer) {
+            Promise.all(filterPromiseList).then(values => {
+                console.log(values);
                 console.log("onload called!");
-                make_download(renderedBuffer, offlineAudioCtx.length);
+                soundSource.start(0);  // Added by Russell - Shoutout Russell 
+                
+                offlineAudioCtx.startRendering().then(function(renderedBuffer) {
+                    make_download(renderedBuffer, offlineAudioCtx.length);
+                });
             });
         });
+
     }
 
     fileReader.readAsArrayBuffer(file);
 
     function enable(filter, soundSource, offlineAudioCtx){
-        switch(filter.name){
-            case "Gain":
-                var gainNode = offlineAudioCtx.createGain();
-                gainNode.gain.value = filter.allParams["Gain Value"].getValue();
-                soundSource.connect(gainNode);
-                gainNode.connect(offlineAudioCtx.destination);
-                break;
-            case "Speed":
-                soundSource.playbackRate.value = filter.allParams["Multiplier"].getValue();
-                break;
-            case "Reverb":
-                var request = new XMLHttpRequest();
-                request.open("GET", "impulse2.wav", true);
-                request.responseType = 'arraybuffer'
-                request.onload = function (ev) {
+        return new Promise((resolve, reject) => {
+            switch(filter.name){
+                case "Gain":
+                    var gainNode = offlineAudioCtx.createGain();
+                    gainNode.gain.value = filter.allParams["Gain Value"].getValue();
+                    soundSource.connect(gainNode);
+                    gainNode.connect(offlineAudioCtx.destination);
+                    resolve("Gain Finished");
+                    break;
+                case "Speed":
+                    soundSource.playbackRate.value = filter.allParams["Multiplier"].getValue();
+                    resolve("Speed Finished");
+                    break;
+                case "Reverb":
+                    var request = new XMLHttpRequest();
+                    request.open("GET", "impulse2.wav", true);
+                    request.responseType = 'arraybuffer'
+                    request.onload = function (ev) {
 
-                    if (request.readyState === 4) {
-                        if (request.status === 200) {
-                            console.log("yay!!!");
-                        } else {
-                            console.error(request.statusText);
-                        }
+                        offlineAudioCtx.decodeAudioData(request.response).then(function(buffer){
+                            var convolver = offlineAudioCtx.createConvolver();
+                            convolver.buffer = buffer;
+        
+                            soundSource.connect(convolver);
+                            convolver.connect(offlineAudioCtx.destination);
+                            resolve("Reverb Finished");
+                        });
                     }
-
-                    offlineAudioCtx.decodeAudioData(request.response).then(function(buffer){
-                        var convolver = offlineAudioCtx.createConvolver();
-                        convolver.buffer = buffer;
-    
-                        soundSource.connect(convolver);
-                        convolver.connect(offlineAudioCtx.destination);
-                        console.log("finished reverb");
-                    });
-                }
-                request.onerror = function (ev) {
-                    console.error(request.statusText);
-                };
-                request.send(null);
-                break;
-        }
+                    request.send(null);
+                    break;
+            }
+        });
     }
 
     function make_download(abuffer, total_samples) {
