@@ -1,68 +1,5 @@
-class Filter{
-
-    constructor(name){
-        this.name = name;
-        this.allParams = {};
-
-        // This is the overall div that the filter is in
-        var filterDiv = document.createElement("div");
-        filterDiv.className = "item";
-
-        // This div will contain all the parameters
-        // ID Example: Gain-param
-        this.paramDiv = document.createElement("div");
-        this.paramDiv.id = this.name + "-param";
-
-        // Checkbox to enable the filter
-        // ID Example: Gain-checkbox
-        this.checkbox = document.createElement("input");
-        this.checkbox.type = "checkbox";
-        this.checkbox.id = this.name + "-checkbox";
-        // Name of the filter
-        var label = document.createElement("label");
-        label.htmlFor = this.checkbox.id;
-        label.textContent = this.name;
-
-        filterDiv.appendChild(this.checkbox);
-        filterDiv.appendChild(label);
-        filterDiv.appendChild(this.paramDiv);
-
-        document.getElementsByClassName("wrapper")[0].appendChild(filterDiv);
-    }
-
-    getChecked(){
-        return this.checkbox.checked;
-    }
-
-    createNumberParam(paramName, defaultNum) {
-        var param = new NumberParam(paramName, defaultNum, this.name);
-        this.allParams[paramName] = param
-    }
-}
-
-class NumberParam {
-    constructor(paramName, defaultNum, filterName){
-        var paramLabel = document.createElement("label");
-        paramLabel.htmlFor = this.name + "-" + paramName;
-        paramLabel.textContent = paramName;
-        
-        // ID Example: Gain-Value
-        this.inputBox = document.createElement("input");
-        this.inputBox.type = "number";
-        this.inputBox.value = defaultNum;
-        this.inputBox.id = this.name + "-" + paramName;
-
-        document.getElementById(filterName + "-param").appendChild(paramLabel);
-        document.getElementById(filterName + "-param").appendChild(this.inputBox);
-    }
-
-    getValue(){
-        return this.inputBox.value;
-    }
-}
-
-var gain = new Filter("Gain");
-gain.createNumberParam("Gain Value", 1);
+var gain = new Filter("Gain (Volume)");
+gain.createNumberParam("Gain Increase", 1);
 var speed = new Filter("Speed");
 speed.createNumberParam("Multiplier", 1);
 var reverb = new Filter("Reverb");
@@ -125,9 +62,9 @@ function compile(){
     function enable(filter, soundSource, offlineAudioCtx){
         return new Promise((resolve, reject) => {
             switch(filter.name){
-                case "Gain":
+                case "Gain (Volume)":
                     var gainNode = offlineAudioCtx.createGain();
-                    gainNode.gain.value = filter.allParams["Gain Value"].getValue();
+                    gainNode.gain.value = filter.allParams["Gain Increase"].getValue();
                     soundSource.connect(gainNode);
                     gainNode.connect(offlineAudioCtx.destination);
                     resolve("Gain Finished");
