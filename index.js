@@ -6,6 +6,7 @@ var reverb = new Filter("Reverb");
 var allFilters = [gain, speed, reverb]
 
 function compile(){
+    console.log("compile called");
     //creates the audio bar
     var fileInput = document.getElementById("audio-input-button");
     switch (fileOrRecording){
@@ -61,7 +62,7 @@ function compile(){
 
     function enable(filter, soundSource, offlineAudioCtx){
         return new Promise((resolve, reject) => {
-            switch(filter.name){
+            switch(filter.filterDisplayName){
                 case "Gain (Volume)":
                     var gainNode = offlineAudioCtx.createGain();
                     gainNode.gain.value = filter.allParams["Gain Increase"].getValue();
