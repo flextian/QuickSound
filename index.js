@@ -9,6 +9,7 @@ eqFilter.createDropdownParam("Type", ["Lowpass", "Highpass", "Bandpass", "Lowshe
 eqFilter.createNumberParam("Frequency", 50);
 eqFilter.createNumberParam("Q", 40);
 eqFilter.createNumberParam("Gain", 0);
+eqFilter.createCaption("Read More at <a href='https://webaudioapi.com/samples/frequency-response/'>https://webaudioapi.com/samples/frequency-response/</a>");
 var bassBoost = new Filter("Bass Boost");
 bassBoost.createNumberParam("Intensity", 0);
 var allFilters = [gain, speed, reverb, eqFilter, bassBoost];
@@ -113,6 +114,7 @@ function compile() {
                     resolve("EQ Filter Finished");
                     break;
                 case "Bass Boost":
+                    //TODO: Make the filter actually sound good
                     var BassBoostFilter = offlineAudioCtx.createBiquadFilter();
                     BassBoostFilter.frequency.value = 50;
                     BassBoostFilter.Q.value = filter.allParams["Intensity"].getValue();

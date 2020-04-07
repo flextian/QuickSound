@@ -44,6 +44,10 @@ class Filter {
         var param = new DropdownParam(paramName, choices, this.filterIdName);
         this.allParams[paramName] = param;
     }
+
+    createCaption(html) {
+        this.paramDiv.innerHTML += html;
+    }
 }
 
 class NumberParam {

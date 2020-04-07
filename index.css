@@ -1,15 +1,14 @@
-body{
+body {
     text-align: center;
 }
-
-.wrapper{
+.wrapper {
     display: grid;
     width: 60%;
     padding: 3%;
     margin: 0 auto;
     grid-template-columns: repeat(3, 1fr);
 }
-.item{
+.item {
     background-color: #92a8d1;
     padding: 10px;
 }
