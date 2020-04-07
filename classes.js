@@ -37,7 +37,12 @@ class Filter{
 
     createNumberParam(paramName, defaultNum) {
         var param = new NumberParam(paramName, defaultNum, this.filterIdName);
-        this.allParams[paramName] = param
+        this.allParams[paramName] = param;
+    }
+
+    createDropdownParam(paramName, choices) {
+        var param = new DropdownParam(paramName, choices, this.filterIdName);
+        this.allParams[paramName] = param;
     }
 }
 
@@ -62,5 +67,32 @@ class NumberParam {
 
     getValue(){
         return this.inputBox.value;
+    }
+}
+
+class DropdownParam {
+    constructor(paramName, choices, filterName){
+        this.paramIdName = paramName.replace(" ", "-");
+        this.paramDisplayName = paramName;
+
+        var paramLabel = document.createElement("label");
+        paramLabel.htmlFor = filterName + "-" + this.paramIdName;
+        paramLabel.textContent = this.paramDisplayName;
+
+        this.DropdownBar = document.createElement("select");
+        this.DropdownBar.id = filterName + "-" + this.paramIdName;
+
+        for (var choiceText in choices){
+            var choice = document.createElement("option");
+            choice.textContent = choices[choiceText];
+            this.DropdownBar.appendChild(choice);
+        }
+
+        document.getElementById(filterName + "-param").appendChild(paramLabel);
+        document.getElementById(filterName + "-param").appendChild(this.DropdownBar);
+    }
+
+    getValue(){
+        return this.DropdownBar.value;
     }
 }
