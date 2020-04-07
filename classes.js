@@ -1,6 +1,6 @@
-class Filter{
+class Filter {
 
-    constructor(name){
+    constructor(name) {
         this.filterDisplayName = name;
         this.filterIdName = name.replace(" ", "-");
         this.allParams = {};
@@ -31,7 +31,7 @@ class Filter{
         document.getElementsByClassName("wrapper")[0].appendChild(filterDiv);
     }
 
-    getChecked(){
+    getChecked() {
         return this.checkbox.checked;
     }
 
@@ -47,14 +47,14 @@ class Filter{
 }
 
 class NumberParam {
-    constructor(paramName, defaultNum, filterName){
+    constructor(paramName, defaultNum, filterName) {
         this.paramIdName = paramName.replace(" ", "-");
         this.paramDisplayName = paramName;
 
         var paramLabel = document.createElement("label");
         paramLabel.htmlFor = filterName + "-" + this.paramIdName;
         paramLabel.textContent = this.paramDisplayName;
-        
+
         // ID Example: Gain-(Volume)-Gain-Increase
         this.inputBox = document.createElement("input");
         this.inputBox.type = "number";
@@ -68,13 +68,13 @@ class NumberParam {
         document.getElementById(filterName + "-param").appendChild(lineBreak);
     }
 
-    getValue(){
+    getValue() {
         return this.inputBox.value;
     }
 }
 
 class DropdownParam {
-    constructor(paramName, choices, filterName){
+    constructor(paramName, choices, filterName) {
         this.paramIdName = paramName.replace(" ", "-");
         this.paramDisplayName = paramName;
 
@@ -85,7 +85,7 @@ class DropdownParam {
         this.DropdownBar = document.createElement("select");
         this.DropdownBar.id = filterName + "-" + this.paramIdName;
 
-        for (var choiceText in choices){
+        for (var choiceText in choices) {
             var choice = document.createElement("option");
             choice.textContent = choices[choiceText];
             this.DropdownBar.appendChild(choice);
@@ -98,7 +98,7 @@ class DropdownParam {
         document.getElementById(filterName + "-param").appendChild(lineBreak);
     }
 
-    getValue(){
+    getValue() {
         return this.DropdownBar.value;
     }
 }
