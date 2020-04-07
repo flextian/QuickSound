@@ -1,9 +1,14 @@
 var gain = new Filter("Gain (Volume)");
-gain.createNumberParam("Gain Increase", 1);
+gain.createNumberParam("Gain Increase", 0);
 var speed = new Filter("Speed");
 speed.createNumberParam("Multiplier", 1);
 var reverb = new Filter("Reverb");
-var allFilters = [gain, speed, reverb]
+var eqFilter = new Filter("EQ Filter");
+eqFilter.createDropdownParam("Type", ["Lowpass", "Highpass", "Bandpass", "Lowshelf", "Highshelf", "Peaking", "Notch", "Allpass"]);
+eqFilter.createNumberParam("Frequency", 50);
+eqFilter.createNumberParam("Q", 40);
+eqFilter.createNumberParam("Gain", 0);
+var allFilters = [gain, speed, reverb, eqFilter];
 
 function compile(){
     console.log("compile called");
@@ -76,7 +81,7 @@ function compile(){
                     break;
                 case "Reverb":
                     var request = new XMLHttpRequest();
-                    request.open("GET", "impulse2.wav", true);
+                    request.open("GET", "hallway.wav", true);
                     request.responseType = 'arraybuffer'
                     request.onload = function (ev) {
 
@@ -90,6 +95,17 @@ function compile(){
                         });
                     }
                     request.send(null);
+                    break;
+                case "EQ Filter":
+                    var biquadFilter = offlineAudioCtx.createBiquadFilter();
+                    biquadFilter.frequency.value = filter.allParams["Frequency"].getValue();
+                    biquadFilter.Q.value = filter.allParams["Q"].getValue();
+                    biquadFilter.gain.value = filter.allParams["Gain"].getValue();
+                    biquadFilter.type = filter.allParams["Type"].getValue().toLowerCase();
+
+                    soundSource.connect(biquadFilter);
+                    biquadFilter.connect(offlineAudioCtx.destination);
+                    resolve("EQ Filter Finished");
                     break;
             }
         });

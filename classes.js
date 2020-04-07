@@ -61,8 +61,11 @@ class NumberParam {
         this.inputBox.value = defaultNum;
         this.inputBox.id = filterName + "-" + this.paramIdName;
 
+        var lineBreak = document.createElement('br');
+
         document.getElementById(filterName + "-param").appendChild(paramLabel);
         document.getElementById(filterName + "-param").appendChild(this.inputBox);
+        document.getElementById(filterName + "-param").appendChild(lineBreak);
     }
 
     getValue(){
@@ -88,8 +91,11 @@ class DropdownParam {
             this.DropdownBar.appendChild(choice);
         }
 
+        var lineBreak = document.createElement('br');
+
         document.getElementById(filterName + "-param").appendChild(paramLabel);
         document.getElementById(filterName + "-param").appendChild(this.DropdownBar);
+        document.getElementById(filterName + "-param").appendChild(lineBreak);
     }
 
     getValue(){
