@@ -3,12 +3,15 @@ gain.createNumberParam("Gain Increase", 0);
 var speed = new Filter("Speed");
 speed.createNumberParam("Multiplier", 1);
 var reverb = new Filter("Reverb");
+reverb.createDropdownParam("Location", ["Tunnel", "Tunnel2", "Stadium"]);
 var eqFilter = new Filter("EQ Filter");
 eqFilter.createDropdownParam("Type", ["Lowpass", "Highpass", "Bandpass", "Lowshelf", "Highshelf", "Peaking", "Notch", "Allpass"]);
 eqFilter.createNumberParam("Frequency", 50);
 eqFilter.createNumberParam("Q", 40);
 eqFilter.createNumberParam("Gain", 0);
-var allFilters = [gain, speed, reverb, eqFilter];
+var bassBoost = new Filter("Bass Boost");
+bassBoost.createNumberParam("Intensity", 0);
+var allFilters = [gain, speed, reverb, eqFilter, bassBoost];
 
 function compile() {
     console.log("compile called");
@@ -30,8 +33,8 @@ function compile() {
         audioCtx.decodeAudioData(ev.target.result).then(function (buffer) {
             var offlineAudioCtx = new OfflineAudioContext({
                 numberOfChannels: 2,
-                length: speed.getChecked() ? (48000 * buffer.duration) / speed.allParams["Multiplier"].getValue() : 48000 * buffer.duration,
-                sampleRate: 48000,
+                length: speed.getChecked() ? (44100 * buffer.duration) / speed.allParams["Multiplier"].getValue() : 44100 * buffer.duration,
+                sampleRate: 44100,
             });
             var soundSource = offlineAudioCtx.createBufferSource();
             soundSource.buffer = buffer;
@@ -81,7 +84,9 @@ function compile() {
                     break;
                 case "Reverb":
                     var request = new XMLHttpRequest();
-                    request.open("GET", "hallway.wav", true);
+                    var url = filter.allParams["Location"].getValue() + ".wav";
+
+                    request.open("GET", url, true);
                     request.responseType = 'arraybuffer'
                     request.onload = function (ev) {
 
@@ -106,6 +111,17 @@ function compile() {
                     soundSource.connect(biquadFilter);
                     biquadFilter.connect(offlineAudioCtx.destination);
                     resolve("EQ Filter Finished");
+                    break;
+                case "Bass Boost":
+                    var BassBoostFilter = offlineAudioCtx.createBiquadFilter();
+                    BassBoostFilter.frequency.value = 50;
+                    BassBoostFilter.Q.value = filter.allParams["Intensity"].getValue();
+                    BassBoostFilter.type = "lowpass";
+
+                    soundSource.connect(BassBoostFilter);
+                    BassBoostFilter.connect(offlineAudioCtx.destination);
+
+                    resolve("Bass Boost Filter Finished");
                     break;
             }
         });
