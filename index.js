@@ -46,25 +46,33 @@ function compile() {
                 }
             }
             
-            //HUGE HUGE HUGE TASK TODO: MAKE THE FILTERS ACTUALLY ONE PATH!!! THEY INTERFERE!!
+                //HUGE HUGE HUGE TASK TODO: MAKE THE FILTERS ACTUALLY ONE PATH!!! THEY INTERFERE!! - not hard at all!
             var filterPromiseList = [];
-            if (allCheckedFilters.length === 0){
-                soundSource.connect(offlineAudioCtx.destination);
-            }else{
-                for (var filter in allCheckedFilters) {
 
-                    console.log(allCheckedFilters[filter].allParams);
-                    for (var param in allCheckedFilters[filter].allParams){
-                        console.log(param + ": " + allCheckedFilters[filter].allParams[param].getValue());
-                    }
-    
-                    var promise = enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
-                    filterPromiseList.push(promise);
+            for (var filter in allCheckedFilters) {
+
+                //Prints all the parameters
+                console.log(allCheckedFilters[filter].allParams);
+                for (var param in allCheckedFilters[filter].allParams){
+                    console.log(param + ": " + allCheckedFilters[filter].allParams[param].getValue());
                 }
-            }
 
-            Promise.all(filterPromiseList).then(values => {
-                console.log(values);
+                var promise = enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
+                filterPromiseList.push(promise);
+            }
+            
+
+            Promise.all(filterPromiseList).then(nodes => {
+                console.log(nodes);
+                var filteredNodes = nodes.filter(x => x != undefined);
+                filteredNodes.push(offlineAudioCtx.destination);
+                filteredNodes.unshift(soundSource);
+                console.log(filteredNodes);
+
+                for (var nodeIndex = 0; nodeIndex <= filteredNodes.length - 2; nodeIndex++){
+                    filteredNodes[nodeIndex].connect(filteredNodes[nodeIndex + 1]);
+                }
+
                 console.log("onload called!");
                 soundSource.start(0); // Added by Russell - Shoutout Russell 
 
@@ -84,13 +92,13 @@ function compile() {
                 case "Gain (Volume)":
                     var gainNode = offlineAudioCtx.createGain();
                     gainNode.gain.value = filter.allParams["Gain Increase"].getValue();
-                    soundSource.connect(gainNode);
-                    gainNode.connect(offlineAudioCtx.destination);
-                    resolve("Gain Finished");
+
+                    resolve(gainNode);
                     break;
                 case "Speed":
+                    //Speed does not return a node
                     soundSource.playbackRate.value = filter.allParams["Multiplier"].getValue();
-                    resolve("Speed Finished");
+                    resolve();
                     break;
                 case "Reverb":
                     var request = new XMLHttpRequest();
@@ -101,12 +109,10 @@ function compile() {
                     request.onload = function (ev) {
 
                         offlineAudioCtx.decodeAudioData(request.response).then(function (buffer) {
-                            var convolver = offlineAudioCtx.createConvolver();
-                            convolver.buffer = buffer;
+                            var convolverNode = offlineAudioCtx.createConvolver();
+                            convolverNode.buffer = buffer;
 
-                            soundSource.connect(convolver);
-                            convolver.connect(offlineAudioCtx.destination);
-                            resolve("Reverb Finished");
+                            resolve(convolverNode);
                         });
                     }
                     request.send(null);
@@ -118,9 +124,7 @@ function compile() {
                     biquadFilter.gain.value = filter.allParams["Gain"].getValue();
                     biquadFilter.type = filter.allParams["Type"].getValue().toLowerCase();
 
-                    soundSource.connect(biquadFilter);
-                    biquadFilter.connect(offlineAudioCtx.destination);
-                    resolve("EQ Filter Finished");
+                    resolve(biquadFilter);
                     break;
 
                 case "Bass Boost":
@@ -130,10 +134,7 @@ function compile() {
                     BassBoostFilter.Q.value = filter.allParams["Intensity"].getValue();
                     BassBoostFilter.type = "lowpass";
 
-                    soundSource.connect(BassBoostFilter);
-                    BassBoostFilter.connect(offlineAudioCtx.destination);
-
-                    resolve("Bass Boost Filter Finished");
+                    resolve(BassBoostFilter);
                     break;
             }
         });
