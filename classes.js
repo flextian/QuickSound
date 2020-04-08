@@ -45,6 +45,7 @@ class Filter {
         this.allParams[paramName] = param;
     }
 
+    //TODO: Fix the removal of the default values
     createCaption(html) {
         this.paramDiv.innerHTML += html;
     }

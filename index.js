@@ -9,7 +9,6 @@ eqFilter.createDropdownParam("Type", ["Lowpass", "Highpass", "Bandpass", "Lowshe
 eqFilter.createNumberParam("Frequency", 50);
 eqFilter.createNumberParam("Q", 40);
 eqFilter.createNumberParam("Gain", 0);
-eqFilter.createCaption("Read More at <a href='https://webaudioapi.com/samples/frequency-response/'>https://webaudioapi.com/samples/frequency-response/</a>");
 var bassBoost = new Filter("Bass Boost");
 bassBoost.createNumberParam("Intensity", 0);
 var allFilters = [gain, speed, reverb, eqFilter, bassBoost];
@@ -46,12 +45,22 @@ function compile() {
                     allCheckedFilters.push(allFilters[filter]);
                 }
             }
-
+            
+            //HUGE HUGE HUGE TASK TODO: MAKE THE FILTERS ACTUALLY ONE PATH!!! THEY INTERFERE!!
             var filterPromiseList = [];
-            soundSource.connect(offlineAudioCtx.destination);
-            for (var filter in allCheckedFilters) {
-                var promise = enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
-                filterPromiseList.push(promise);
+            if (allCheckedFilters.length === 0){
+                soundSource.connect(offlineAudioCtx.destination);
+            }else{
+                for (var filter in allCheckedFilters) {
+
+                    console.log(allCheckedFilters[filter].allParams);
+                    for (var param in allCheckedFilters[filter].allParams){
+                        console.log(param + ": " + allCheckedFilters[filter].allParams[param].getValue());
+                    }
+    
+                    var promise = enable(allCheckedFilters[filter], soundSource, offlineAudioCtx);
+                    filterPromiseList.push(promise);
+                }
             }
 
             Promise.all(filterPromiseList).then(values => {
@@ -113,6 +122,7 @@ function compile() {
                     biquadFilter.connect(offlineAudioCtx.destination);
                     resolve("EQ Filter Finished");
                     break;
+
                 case "Bass Boost":
                     //TODO: Make the filter actually sound good
                     var BassBoostFilter = offlineAudioCtx.createBiquadFilter();
