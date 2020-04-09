@@ -6,9 +6,10 @@ var reverb = new Filter("Reverb");
 reverb.createDropdownParam("Location", ["Tunnel", "Tunnel2", "Stadium"]);
 var eqFilter = new Filter("EQ Filter");
 eqFilter.createDropdownParam("Type", ["Lowpass", "Highpass", "Bandpass", "Lowshelf", "Highshelf", "Peaking", "Notch", "Allpass"]);
-eqFilter.createNumberParam("Frequency", 50);
-eqFilter.createNumberParam("Q", 40);
+eqFilter.createNumberParam("Frequency", 500);
+eqFilter.createNumberParam("Q", 10);
 eqFilter.createNumberParam("Gain", 0);
+eqFilter.createCaption("<a  target='_blank' href=https://webaudioapi.com/samples/frequency-response/>More Info</a>");
 var bassBoost = new Filter("Bass Boost");
 bassBoost.createNumberParam("Intensity", 0);
 var allFilters = [gain, speed, reverb, eqFilter, bassBoost];
@@ -46,9 +47,7 @@ function compile() {
                 }
             }
             
-                //HUGE HUGE HUGE TASK TODO: MAKE THE FILTERS ACTUALLY ONE PATH!!! THEY INTERFERE!! - not hard at all!
             var filterPromiseList = [];
-
             for (var filter in allCheckedFilters) {
 
                 //Prints all the parameters
@@ -128,11 +127,10 @@ function compile() {
                     break;
 
                 case "Bass Boost":
-                    //TODO: Make the filter actually sound good
                     var BassBoostFilter = offlineAudioCtx.createBiquadFilter();
-                    BassBoostFilter.frequency.value = 50;
-                    BassBoostFilter.Q.value = filter.allParams["Intensity"].getValue();
-                    BassBoostFilter.type = "lowpass";
+                    BassBoostFilter.frequency.value = 400;
+                    BassBoostFilter.gain.value = filter.allParams["Intensity"].getValue();
+                    BassBoostFilter.type = "lowshelf";
 
                     resolve(BassBoostFilter);
                     break;

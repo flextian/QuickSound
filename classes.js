@@ -47,7 +47,11 @@ class Filter {
 
     //TODO: Fix the removal of the default values
     createCaption(html) {
-        this.paramDiv.innerHTML += html;
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        while (div.children.length > 0) {
+            this.paramDiv.appendChild(div.children[0]);
+        }
     }
 }
 
