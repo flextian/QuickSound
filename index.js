@@ -9,7 +9,7 @@ eqFilter.createDropdownParam("Type", ["Lowpass", "Highpass", "Bandpass", "Lowshe
 eqFilter.createNumberParam("Frequency", 500);
 eqFilter.createNumberParam("Q", 10);
 eqFilter.createNumberParam("Gain", 0);
-eqFilter.createCaption("<a  target='_blank' href=https://webaudioapi.com/samples/frequency-response/>More Info</a>");
+eqFilter.createCaption("<a target='_blank' href=https://webaudioapi.com/samples/frequency-response/>More Info</a>");
 var bassBoost = new Filter("Bass Boost");
 bassBoost.createNumberParam("Intensity", 0);
 var allFilters = [gain, speed, reverb, eqFilter, bassBoost];
