@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <h1>Flextian's Online Audio Editor</h1>
+    <h1>QuickSound Audio Editor</h1>
     <input type="file" id="audio-input-button" accept="audio/*">
     <div id="file-audio"></div>
 
@@ -19,8 +19,10 @@
 
     <div class="wrapper"></div>
 
-    <button onclick="compile()">Compile Audio</button>
-    <div id="output"></div>
+    <button id="compile-button" onclick="compile()">Compile Audio</button>
+    <div id="output">
+        <p>output</p>
+    </div>
 
     <script src="classes.js"></script>
     <script src="index.js"></script>
