@@ -29,7 +29,7 @@ startRecordingButton.addEventListener("click", function (ev) {
             }
 
             mediaRecorder.onstop = function (ev) {
-                var div = document.getElementById("recorded-audio");
+                var div = document.getElementById("input-audio");
                 div.innerHTML = "";
                 recordingFile = new Blob(chunks, {
                     'type': 'audio/mp3'
@@ -51,7 +51,7 @@ startRecordingButton.addEventListener("click", function (ev) {
 
 var fileInputButton = document.getElementById("audio-input-button");
 fileInputButton.addEventListener("change", function (ev) {
-    var div = document.getElementById("file-audio");
+    var div = document.getElementById("input-audio");
     div.innerHTML = "";
 
     var fileAudioBar = document.createElement("audio");

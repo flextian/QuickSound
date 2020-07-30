@@ -9,20 +9,38 @@
 
 <body>
     <h1>QuickSound Audio Editor</h1>
-    <input type="file" id="audio-input-button" accept="audio/*">
-    <div id="file-audio"></div>
 
-    <p>or</p>
+    <div class="input-output-wrapper" id="input-method-div">
+        <div style="margin:auto 0">
+            <input type="file" id="audio-input-button" accept="audio/*">
+        </div>
+        <div>
+            <h1>or</h1>
+        </div>
+        <div style="margin:auto 0">
+            <button id="record-start">Record Audio</button>
+        </div>
+    </div>
 
-    <button id="record-start">Record Audio</button>
-    <div id="recorded-audio"></div>
+
+    <div class="input-output-wrapper">
+        <h2>Input</h2>
+        <div id="input-audio" class="audio-bar">
+            <h3>No Audio Input</h3>
+        </div>
+    </div>
 
     <div class="wrapper"></div>
 
     <button id="compile-button" onclick="compile()">Compile Audio</button>
-    <div id="output">
-        <p>output</p>
+
+    <div class="input-output-wrapper">
+        <h2>Output</h2>
+        <div id="output" class="audio-bar">
+            <h3>No Audio Output</h3>
+        </div>
     </div>
+
 
     <script src="classes.js"></script>
     <script src="index.js"></script>

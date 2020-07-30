@@ -1,6 +1,6 @@
-body {
-    text-align: center;
+* {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
 }
 
 .wrapper {
@@ -19,7 +19,6 @@ body {
 #compile-button {
     padding: 15px 25px;
     font-size: 24px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     cursor: pointer;
     text-align: center;
     color: #fff;
@@ -36,4 +35,25 @@ body {
   background-color: #3e8e41;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
+}
+
+.input-output-wrapper {
+    background-color:#92a8d1;
+    margin: auto;
+    margin-top: 3%;
+    padding: 1% 1%;
+    width: 60%;
+}
+
+.audio-bar {
+    background-color: #0d98ba;
+    width: 60%;
+    margin: auto;
+    padding: 0.1% 0;
+}
+
+#input-method-div {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    vertical-align: center;
 }
